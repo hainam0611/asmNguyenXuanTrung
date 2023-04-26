@@ -29,14 +29,11 @@ class CartController extends Controller
         $product = Product::findOrFail($id);
         $cartItems = Session::get('products.cart', []);
 
-        // Tìm kiếm sản phẩm trong giỏ hàng với ID tương ứng
         $itemId = array_search($id, array_column($cartItems, 'product_id'));
 
         if ($itemId !== false) {
-            // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng sản phẩm đó lên
             $cartItems[$itemId]['quantity']++;
         } else {
-            // Nếu sản phẩm không có trong giỏ hàng, thêm sản phẩm mới vào giỏ hàng
             $newItemId = count($cartItems) > 0 ? max(array_column($cartItems, 'id')) + 1 : 1;
             $cartItem = [
                 'id' => $newItemId,
@@ -68,16 +65,6 @@ class CartController extends Controller
         Session::put('products.cart', $cartItems);
 
         return redirect()->route('products.cart')->with('success', 'Product removed from cart.');
-    }
-
-    private function getItemId($productId, $cartItems)
-    {
-        foreach ($cartItems as $key => $item) {
-            if ($item['product_id'] == $productId) {
-                return $key;
-            }
-        }
-        return false;
     }
 
     private function getTotalPrice($cartItems)
